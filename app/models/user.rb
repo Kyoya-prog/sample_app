@@ -10,4 +10,7 @@ class User < ApplicationRecord
             # 連続保存などではメモリ上に同一のデータが残る恐れがある
             # よってデータベースにインデックスを貼ることで唯一性を担保している
             uniqueness: { case_sensitive: false }
+  # これを追加することでUserモデルに仮想的なpassword属性とpassword_confirmation属性が追加される
+  has_secure_password
+  validates :password,presence:true,length: {minimum: 6}
 end
