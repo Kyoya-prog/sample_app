@@ -16,6 +16,7 @@ class SessionsController < ApplicationController
   end
 
   def destroy
+    #  複数のタブでログアウトしようとした時に、最初のログアウトでcurrent_userがnilになっているのにも関わらず、もう一度ログアウトしようとすると、userモデルのforgetがエラーになってしまうのでログイン中の場合のみログアウトにする
     log_out if logged_in?
     redirect_to root_path
   end

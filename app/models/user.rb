@@ -34,6 +34,7 @@ class User < ApplicationRecord
   end
 
   #BCriptで暗号化したパスワートダイジェストカラムの値はis_Passwordで認証できる
+  # 二つのブラウザがあり、一つのブラウザでログアウトし、もう一つのブラウザでもう一度ログアウトしようとした場合、currentUser実行時に、後者のブラウザでcookieが残ったままなので、rememberdigestが空なのにも関わらずこのメソッドが実行され、Bcryptでエラーになる
   def authenticated?(remember_token)
     return false if remember_digest.nil?
     BCrypt::Password.new(remember_digest).is_password?(remember_token)

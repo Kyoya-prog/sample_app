@@ -3,6 +3,11 @@ module SessionsHelper
     session[:user_id] = user.id
   end
 
+  # authenticated?の方にも記述したが、複数のブラウザでログアウトしようとすると、エラーが起こる
+  # ログアウト時にcurrent_userが実行される。しかし複数ブラウザだと各ブラウザにcookieの情報は残ったままなので、
+  # ネストされたif文を通過し、authenticatedが呼ばれ、remember_digestとremember_tokenの比較が BCryptで行われる
+  # しかし最初のブラウザのログアウト時にremember_digestはnilになってしまっているのでninにされているのでBCryptにnilを渡したことによるエラーが発生してしまう
+  # なのでauthenticated内でremember_digestが存在するかどうかを判定し、なかった場合はメソッド全体でnilを返すようにするgit
   def current_user
     if (user_id = session[:user_id])
       @current_user ||= User.find_by(id: user_id)
