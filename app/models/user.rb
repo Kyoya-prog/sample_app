@@ -27,10 +27,10 @@ class User < ApplicationRecord
     SecureRandom.urlsafe_base64
   end
 
-  #記憶トークンをユーザーと紐付け、トークンに対応するダイジェストをデータベースに保存する
+  # 永続セッションのためにユーザーをデータベースに記憶する
   def remember
     self.remember_token = User.new_token
-    update_attribute(:remember_digest, self.remember_token)
+    update_attribute(:remember_digest, User.digest(remember_token))
   end
 
   #BCriptで暗号化したパスワートダイジェストカラムの値はis_Passwordで認証できる
