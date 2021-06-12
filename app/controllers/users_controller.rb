@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_action :check_logged_in_user,only:[:edit,:update]
+  before_action :check_logged_in_user,only:[:edit,:update,:index]
   before_action :check_correct_user,only:[:edit,:update]
   def show
     @user = User.find(params[:id])
@@ -30,6 +30,10 @@ class UsersController < ApplicationController
     else
       render 'edit'
     end
+  end
+
+  def index
+    @user = User.all
   end
 
   private
