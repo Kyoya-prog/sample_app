@@ -13,7 +13,8 @@ class User < ApplicationRecord
             uniqueness: { case_sensitive: false }
   # これを追加することでUserモデルに仮想的なpassword属性とpassword_confirmation属性が追加される
   has_secure_password
-  validates :password,presence:true,length: {minimum: 6}
+  # nilを許可してもオブジェクト生成時にhas_secure_passwordで検証されるので問題なし
+  validates :password,presence:true,length: {minimum: 6},allow_nil: true
 
 
   # 渡された文字列のハッシュ値を返す(fixture用のpassword_digest生成のため)
