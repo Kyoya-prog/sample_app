@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_action :check_logged_in_user,only:[:edit,:update,:index]
+  before_action :check_logged_in_user,only:[:edit,:update,:index,:destroy]
   before_action :check_correct_user,only:[:edit,:update]
   before_action :admin_user,     only: :destroy
   def show
