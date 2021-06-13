@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  has_many :microposts
   attr_accessor :remember_token, :activation_token, :reset_token
   # メールアドレスを保存の前に小文字に統一しておく（DBによっては大文字小文字を区別できないため、indexのuniqueを通り抜ける恐れがある）
   before_save { self.email = email.downcase }
