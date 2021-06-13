@@ -47,6 +47,15 @@ class User < ApplicationRecord
     update_attribute(:remember_digest,nil )
   end
 
+  def activate
+    update_attribute(:activated,    true)
+    update_attribute(:activated_at, Time.zone.now)
+  end
+
+  def send_activation_mail
+    UserMailer.account_activation(self).deliver_now
+  end
+
   private
 
   # before_createはユーザーのデータ構造が定義され、データが保存される前に呼び出される
