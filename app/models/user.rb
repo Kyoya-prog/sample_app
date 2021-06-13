@@ -1,7 +1,8 @@
 class User < ApplicationRecord
-  attr_accessor :remember_token
+  attr_accessor :remember_token,:activation_token
   # メールアドレスを保存の前に小文字に統一しておく（DBによっては大文字小文字を区別できないため、indexのuniqueを通り抜ける恐れがある）
   before_save { self.email = email.downcase }
+  before_create{ create_activation_digest }
   validates :name, presence: true,length:{maximum: 50}
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
   validates :email, presence: true,length: {maximum: 255},
@@ -36,12 +37,30 @@ class User < ApplicationRecord
 
   #BCriptで暗号化したパスワートダイジェストカラムの値はis_Passwordで認証できる
   # 二つのブラウザがあり、一つのブラウザでログアウトし、もう一つのブラウザでもう一度ログアウトしようとした場合、currentUser実行時に、後者のブラウザでcookieが残ったままなので、rememberdigestが空なのにも関わらずこのメソッドが実行され、Bcryptでエラーになる
-  def authenticated?(remember_token)
-    return false if remember_digest.nil?
-    BCrypt::Password.new(remember_digest).is_password?(remember_token)
+  def authenticated?(attribute, token)
+    digest = self.send("#{attribute}_digest")
+    return false if digest.nil?
+    BCrypt::Password.new(digest).is_password?(token)
   end
 
   def forget
     update_attribute(:remember_digest,nil )
+  end
+
+  def activate
+    update_attribute(:activated,    true)
+    update_attribute(:activated_at, Time.zone.now)
+  end
+
+  def send_activation_mail
+    UserMailer.account_activation(self).deliver_now
+  end
+
+  private
+
+  # before_createはユーザーのデータ構造が定義され、データが保存される前に呼び出される
+  def create_activation_digest
+    self.activation_token = User.new_token
+    self.activation_digest = User.digest(activation_token)
   end
 end
