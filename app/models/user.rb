@@ -3,6 +3,8 @@ class User < ApplicationRecord
   has_many :active_relationships, class_name:  "Relationship",
            foreign_key: "follower_id",
            dependent:   :destroy
+  has_many :following, through: :active_relationships, source: :followed
+
   attr_accessor :remember_token, :activation_token, :reset_token
   # メールアドレスを保存の前に小文字に統一しておく（DBによっては大文字小文字を区別できないため、indexのuniqueを通り抜ける恐れがある）
   before_save { self.email = email.downcase }
@@ -79,6 +81,21 @@ class User < ApplicationRecord
 
   def feed
     Micropost.where("user_id = ?",id)
+  end
+
+  #フォローする
+  def follow(other_user)
+    following << other_user
+  end
+
+  # フォロー解除する
+  def unfollow(other_user)
+    active_relationships.find_by(followed_id: other_user.id).destroy
+  end
+
+  # フォローをしていたらtrueを返す
+  def following?(other_user)
+    following.include?(other_user)
   end
 
   private
