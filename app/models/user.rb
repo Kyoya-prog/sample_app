@@ -74,6 +74,10 @@ class User < ApplicationRecord
     reset_sent_at < 2.hours.ago
   end
 
+  def feed
+    Micropost.where("user_id = ?",id)
+  end
+
   private
 
   # before_createはユーザーのデータ構造が定義され、データが保存される前に呼び出される

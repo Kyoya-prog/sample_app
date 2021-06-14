@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_action :check_logged_in_user,only:[:edit,:update,:index,:destroy]
+  before_action :logged_in_user,only:[:edit,:update,:index,:destroy]
   before_action :check_correct_user,only:[:edit,:update]
   before_action :admin_user,     only: :destroy
   def show
@@ -49,14 +49,6 @@ class UsersController < ApplicationController
 
   def user_params
     params.require(:user).permit(:name, :email, :password, :password_confirmation)
-  end
-
-  def check_logged_in_user
-    unless logged_in?
-      store_location
-      flash[:danger] = "Please log in."
-      redirect_to login_url
-    end
   end
 
   def check_correct_user
