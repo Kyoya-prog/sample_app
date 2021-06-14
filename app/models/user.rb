@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  has_many :microposts,dependent: :destroy
   attr_accessor :remember_token, :activation_token, :reset_token
   # メールアドレスを保存の前に小文字に統一しておく（DBによっては大文字小文字を区別できないため、indexのuniqueを通り抜ける恐れがある）
   before_save { self.email = email.downcase }
@@ -73,6 +74,10 @@ class User < ApplicationRecord
     reset_sent_at < 2.hours.ago
   end
 
+  def feed
+    Micropost.where("user_id = ?",id)
+  end
+
   private
 
   # before_createはユーザーのデータ構造が定義され、データが保存される前に呼び出される
@@ -80,4 +85,5 @@ class User < ApplicationRecord
     self.activation_token = User.new_token
     self.activation_digest = User.digest(activation_token)
   end
+
 end
